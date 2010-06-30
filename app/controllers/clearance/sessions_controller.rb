@@ -12,26 +12,47 @@ class Clearance::SessionsController < ApplicationController
   def create
     @user = ::User.authenticate(params[:session][:email],
                                 params[:session][:password])
-    if @user.nil?
-      flash_failure_after_create
-      render :template => 'sessions/new', :status => :unauthorized
-    else
-      if @user.email_confirmed?
-        sign_in(@user)
-        flash_success_after_create
-        redirect_back_or(url_after_create)
+                                
+    respond_to do |format|
+      if @user.nil?
+        format.html { 
+          flash_failure_after_create
+          render :template => 'sessions/new', :status => :unauthorized
+        }
+        format.json { render :json => error_after_create(@user), :status => :unauthorized }
+        format.xml  { render :xml => error_after_create(@user), :status => :unauthorized }
       else
-        ::ClearanceMailer.confirmation(@user).deliver
-        flash_notice_after_create
-        redirect_to(sign_in_url)
+        if @user.email_confirmed?
+          sign_in(@user)
+          format.html { 
+            flash_success_after_create
+            redirect_back_or(url_after_create)
+          }
+          format.json { render :json => hash_after_create(@user), :status => :ok }
+          format.xml  { render :xml => hash_after_create(@user), :status => :ok }
+        else
+          ::ClearanceMailer.confirmation(@user).deliver
+          format.html { 
+            flash_notice_after_create
+            redirect_to(sign_in_url)
+          }
+          format.json { render :json => confirm_after_create(@user), :status => :unprocessable_entity }
+          format.xml  { render :xml => confirm_after_create(@user), :status => :unprocessable_entity }
+        end
       end
     end
   end
 
   def destroy
     sign_out
-    flash_success_after_destroy
-    redirect_to(url_after_destroy)
+    respond_to do |format|
+      format.html { 
+        flash_success_after_destroy
+        redirect_to(url_after_destroy)
+      }
+      format.json { head :ok }
+      format.xml  { head :ok }
+    end
   end
 
   private
@@ -64,4 +85,17 @@ class Clearance::SessionsController < ApplicationController
   def url_after_destroy
     sign_in_url
   end
+  
+  def hash_after_create(user)
+    user
+  end
+  
+  def error_after_create(user)
+    { :errors => user.errors.full_messages }
+  end
+  
+  def confirm_after_create(user)
+    { :errors => [ 'Email confirmation resent' ] }
+  end
+  
 end
