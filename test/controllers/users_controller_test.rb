@@ -46,6 +46,49 @@ class UsersControllerTest < ActionController::TestCase
       should set_the_flash.to(/confirm/i)
       should_redirect_to_url_after_create
     end
+    
+    context "on POST to #create with valid attributes" do
+      setup do
+        @user_attributes = Factory.attributes_for(:user)
+        @old_user_count = User.count
+      end
+      
+      ['json', 'xml'].each do |format|
+        context "using format #{format}" do
+          setup { post :create, :format => 'json', :user => @user_attributes }
+      
+          should assign_to(:user)
+          should "create a new user" do
+            assert_equal @old_user_count + 1, User.count
+          end
+      
+          should have_sent_email.with_subject(/account confirmation/i)
+      
+          should respond_with(:success)
+        end
+      end
+    end
+    
+    context "on POST to #create with missing email" do
+      setup do
+        @user_attributes = Factory.attributes_for(:user, :email => nil)
+        @old_user_count = User.count
+      end
+      
+      ['json', 'xml'].each do |format|
+        context "using format #{format}" do
+          setup { post :create, :format => 'json', :user => @user_attributes }
+    
+          should assign_to(:user)
+          should respond_with(:unprocessable_entity)
+          should "not create a new user" do
+            assert_equal @old_user_count, User.count
+          end
+      
+          should_not have_sent_email
+        end
+      end
+    end
   end
 
   context "A signed-in user" do

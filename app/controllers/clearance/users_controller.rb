@@ -13,10 +13,20 @@ class Clearance::UsersController < ApplicationController
   def create
     @user = ::User.new params[:user]
     if @user.save
-      flash_notice_after_create
-      redirect_to(url_after_create)
+      respond_to do |format|
+        format.html { 
+          flash_notice_after_create
+          redirect_to(url_after_create)
+        }
+        format.json { render :json => hash_after_create(@user), :status => :ok }
+        format.xml  { render :xml => hash_after_create(@user), :status => :ok }
+      end
     else
-      render :template => 'users/new'
+      respond_to do |format|
+        format.html { render :template => 'users/new' }
+        format.json { render :json => error_after_create(@user), :status => :unprocessable_entity }
+        format.xml  { render :xml => error_after_create(@user), :status => :unprocessable_entity }
+      end
     end
   end
 
@@ -32,4 +42,13 @@ class Clearance::UsersController < ApplicationController
   def url_after_create
     sign_in_url
   end
+  
+  def hash_after_create(user)
+    user
+  end
+  
+  def error_after_create(user)
+    { :errors => user.errors.full_messages }
+  end
+  
 end
