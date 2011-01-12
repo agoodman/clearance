@@ -26,7 +26,7 @@ class Clearance::SessionsController < ApplicationController
           sign_in(@user)
           format.html { 
             flash_success_after_create
-            redirect_back_or(url_after_create)
+            redirect_to(url_after_create)
           }
           format.json { render :json => hash_after_create(@user), :status => :ok }
           format.xml  { render :xml => hash_after_create(@user), :status => :ok }
