@@ -43,7 +43,7 @@ class Clearance::UsersController < ApplicationController
   end
 
   def flash_alert_after_create
-    flash[:alert] = @user.errors.full_messages.join('<br/>')
+    flash[:alert] = @user.errors.full_messages.join('.\n')
   end
 
   def url_after_create
