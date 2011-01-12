@@ -23,7 +23,10 @@ class Clearance::UsersController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { render :template => 'users/new' }
+        format.html { 
+          flash_alert_after_create
+          render :template => 'users/new' 
+        }
         format.json { render :json => error_after_create(@user), :status => :unprocessable_entity }
         format.xml  { render :xml => error_after_create(@user), :status => :unprocessable_entity }
       end
@@ -37,6 +40,10 @@ class Clearance::UsersController < ApplicationController
       :scope   => [:clearance, :controllers, :users],
       :default => "You will receive an email within the next few minutes. " <<
                   "It contains instructions for confirming your account.")
+  end
+
+  def flash_alert_after_create
+    flash[:alert] = @user.errors.full_messages.join('<br/>')
   end
 
   def url_after_create
