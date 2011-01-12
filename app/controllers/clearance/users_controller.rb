@@ -15,7 +15,7 @@ class Clearance::UsersController < ApplicationController
     if @user.save
       respond_to do |format|
         format.html { 
-          flash_notice_after_create
+          flash_success_after_create
           redirect_to(url_after_create)
         }
         format.json { render :json => hash_after_create(@user), :status => :ok }
@@ -24,7 +24,7 @@ class Clearance::UsersController < ApplicationController
     else
       respond_to do |format|
         format.html { 
-          flash_alert_after_create
+          flash_failure_after_create
           render :template => 'users/new' 
         }
         format.json { render :json => error_after_create(@user), :status => :unprocessable_entity }
@@ -35,15 +35,15 @@ class Clearance::UsersController < ApplicationController
 
   private
 
-  def flash_notice_after_create
+  def flash_success_after_create
     flash[:notice] = translate(:deliver_confirmation,
       :scope   => [:clearance, :controllers, :users],
       :default => "You will receive an email within the next few minutes. " <<
                   "It contains instructions for confirming your account.")
   end
 
-  def flash_alert_after_create
-    flash[:alert] = @user.errors.full_messages.join('.\n')
+  def flash_failure_after_create
+    flash[:alert] = @user.errors.full_messages.join("<br/>\n")
   end
 
   def url_after_create
