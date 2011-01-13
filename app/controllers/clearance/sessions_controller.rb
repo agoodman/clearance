@@ -21,23 +21,13 @@ class Clearance::SessionsController < ApplicationController
         format.json { render :json => error_after_create(@user), :status => :unauthorized }
         format.xml  { render :xml => error_after_create(@user), :status => :unauthorized }
       else
-        if @user.email_confirmed?
-          sign_in(@user)
-          format.html { 
-            flash_success_after_create
-            redirect_to(url_after_create)
-          }
-          format.json { render :json => hash_after_create(@user), :status => :ok }
-          format.xml  { render :xml => hash_after_create(@user), :status => :ok }
-        else
-          ::ClearanceMailer.confirmation(@user).deliver
-          format.html { 
-            flash_notice_after_create
-            redirect_to(sign_in_url)
-          }
-          format.json { render :json => confirm_after_create(@user), :status => :unprocessable_entity }
-          format.xml  { render :xml => confirm_after_create(@user), :status => :unprocessable_entity }
-        end
+        sign_in(@user)
+        format.html { 
+          flash_success_after_create
+          redirect_to(url_after_create)
+        }
+        format.json { render :json => hash_after_create(@user), :status => :ok }
+        format.xml  { render :xml => hash_after_create(@user), :status => :ok }
       end
     end
   end
@@ -84,10 +74,6 @@ class Clearance::SessionsController < ApplicationController
   
   def error_after_create(user)
     { :errors => user.errors.full_messages }
-  end
-  
-  def confirm_after_create(user)
-    { :errors => [ 'Email confirmation resent' ] }
   end
   
 end
