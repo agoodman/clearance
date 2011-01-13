@@ -3,7 +3,6 @@ class Clearance::UsersController < ApplicationController
 
   skip_before_filter :authenticate, :only => [:new, :create]
   before_filter :redirect_to_root,  :only => [:new, :create], :if => :signed_in?
-  filter_parameter_logging :password
 
   def new
     @user = ::User.new(params[:user])
@@ -38,8 +37,7 @@ class Clearance::UsersController < ApplicationController
   def flash_success_after_create
     flash[:notice] = translate(:deliver_confirmation,
       :scope   => [:clearance, :controllers, :users],
-      :default => "You will receive an email within the next few minutes. " <<
-                  "It contains instructions for confirming your account.")
+      :default => "You are now signed up.")
   end
 
   def flash_failure_after_create

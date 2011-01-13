@@ -12,7 +12,11 @@ class UserTest < ActiveSupport::TestCase
   context "When signing up" do
     should validate_presence_of(:email)
     should validate_presence_of(:password)
+    should allow_value("foo@example.co.uk").for(:email)
     should allow_value("foo@example.com").for(:email)
+    should_not allow_value("foo@").for(:email)
+    should_not allow_value("foo@example..com").for(:email)
+    should_not allow_value("foo@.example.com").for(:email)
     should_not allow_value("foo").for(:email)
     should_not allow_value("example.com").for(:email)
 
@@ -32,10 +36,6 @@ class UserTest < ActiveSupport::TestCase
 
     should "initialize salt" do
       assert_not_nil Factory(:user).salt
-    end
-
-    should "initialize confirmation token" do
-      assert_not_nil Factory(:user).confirmation_token
     end
 
     context "encrypt password" do
@@ -59,46 +59,11 @@ class UserTest < ActiveSupport::TestCase
       user = Factory(:user, :email => "John.Doe@example.com")
       assert_equal "John.Doe@example.com", user.email
     end
-
-    should have_sent_email.with_subject(/account confirmation/i)
-  end
-
-  context "When signing up with email already confirmed" do
-    setup do
-      ActionMailer::Base.deliveries.clear
-      Factory(:user, :email_confirmed => true)
-    end
-
-    should_not have_sent_email
   end
 
   context "When multiple users have signed up" do
     setup { Factory(:user) }
     should validate_uniqueness_of(:email)
-  end
-
-  # confirming email
-
-  context "A user without email confirmation" do
-    setup do
-      @user = Factory(:user)
-      assert ! @user.email_confirmed?
-    end
-
-    context "after #confirm_email!" do
-      setup do
-        assert @user.confirm_email!
-        @user.reload
-      end
-
-      should "have confirmed their email" do
-        assert @user.email_confirmed?
-      end
-
-      should "reset confirmation token" do
-        assert_nil @user.confirmation_token
-      end
-    end
   end
 
   # authenticating
@@ -124,7 +89,7 @@ class UserTest < ActiveSupport::TestCase
 
   context "When resetting authentication with reset_remember_token!" do
     setup do
-      @user  = Factory(:email_confirmed_user)
+      @user  = Factory(:user)
       @user.remember_token = "old-token"
       @user.reset_remember_token!
     end
@@ -138,7 +103,7 @@ class UserTest < ActiveSupport::TestCase
 
   context "An email confirmed user" do
     setup do
-      @user = Factory(:email_confirmed_user)
+      @user = Factory(:user)
       @old_encrypted_password = @user.encrypted_password
     end
 
@@ -157,10 +122,10 @@ class UserTest < ActiveSupport::TestCase
   should "not generate the same remember token for users with the same password at the same time" do
     Time.stubs(:now => Time.now)
     password    = 'secret'
-    first_user  = Factory(:email_confirmed_user,
+    first_user  = Factory(:user,
                           :password              => password,
                           :password_confirmation => password)
-    second_user = Factory(:email_confirmed_user,
+    second_user = Factory(:user,
                           :password              => password,
                           :password_confirmation => password)
 
@@ -169,11 +134,10 @@ class UserTest < ActiveSupport::TestCase
 
   # recovering forgotten password
 
-  context "An email confirmed user" do
+  context "An user" do
     setup do
-      @user = Factory(:email_confirmed_user)
+      @user = Factory(:user)
       @old_encrypted_password = @user.encrypted_password
-      @user.confirm_email!
     end
 
     context "who requests password reminder" do

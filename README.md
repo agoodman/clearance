@@ -8,7 +8,7 @@ Rails authentication with email & password.
 Help
 ----
 
-* [documentation](http://rdoc.info/projects/thoughtbot/clearance)
+* [documentation](http://rdoc.info/gems/clearance)
 * [#thoughtbot](irc://irc.freenode.net/thoughtbot) IRC channel on freenode
 * [mailing list](http://groups.google.com/group/thoughtbot-clearance)
 
@@ -20,27 +20,24 @@ Fork away and create a [Github Issue](http://github.com/thoughtbot/clearance/iss
 Installation
 ------------
 
-Clearance is a Rails engine. The latest stable version (0.8.8) works with versions of Rails 2.x.
+Clearance is a Rails engine for Rails 3.
 
-Install it as a gem however you like to install gems. Also, uninstall old versions:
+Use the [0.8.x](https://github.com/thoughtbot/clearance/tree/v0.8.8)
+series of Clearance if you have a Rails 2 app.
 
-    sudo gem uninstall thoughtbot-clearance
-    sudo gem uninstall clearance
-    sudo gem install clearance
+Include the gem in your Gemfile:
+
+    gem "clearance"
 
 Make sure the development database exists, then run the generator:
 
-    script/rails generate clearance
+    rails generate clearance
 
 This:
 
 * inserts Clearance::User into your User model
 * inserts Clearance::Authentication into your ApplicationController
-* created a migration that either creates a users table or adds only missing columns
-
-There is a release candidate which features Rails 3 support. To install this version:
-
-    gem install clearance --prerelease
+* creates a migration that either creates a users table or adds only missing columns
 
 Usage
 -----
@@ -76,7 +73,7 @@ and add your route in config/routes.rb:
 See config/routes.rb for all the routes Clearance provides.
 
 Actions that redirect (create, update, and destroy) in Clearance controllers
-can be overriden by re-defining url_after_(action) methods as seen above.
+can be overridden by re-defining url_after_(action) methods as seen above.
 
 Optional Cucumber features
 --------------------------
@@ -92,11 +89,11 @@ Run the Cucumber generator and Clearance feature generator:
 
 Edit your Gemfile to include:
 
-    gem 'factory_girl'
+    gem 'factory_girl_rails'
 
 Edit your config/enviroments/cucumber.rb to include the following:
 
-    ActionMailer::Base.default_url_options = { :host => 'localhost:3000' }
+    config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
 Then run rake!
 
@@ -111,18 +108,21 @@ Clearance has another generator to generate Formastic views:
 
 Its implementation is designed so other view styles (Haml?) can be generated.
 
+Extensions
+----------
+
+Clearance is intended to be small, simple, well-tested, and easy to extend.
+Check out some of the ways people have extended Clearance:
+
+* [Clearance HTTP Auth](https://github.com/karmi/clearance_http_auth)
+* [Clearance Twitter](https://github.com/thoughtbot/clearance-twitter)
+* [Clearance Admin](https://github.com/xenda/clearance-admin)
+
 Authors
 -------
 
 Clearance was extracted out of [Hoptoad](http://hoptoadapp.com). We merged the
-authentication code from two of thoughtbot client Rails apps and have since
-used it each time we need authentication.
+authentication code from two of thoughtbot's client Rails apps and have since
+used it each time we needed authentication.
 
-The following people have improved the library. Thank you!
-
-Dan Croak, Mike Burns, Jason Morrison, Joe Ferris, Eugene Bolshakov,
-Nick Quaranto, Josh Nichols, Mike Breen, Marcel Görner, Bence Nagy, Ben Mabey,
-Eloy Duran, Tim Pope, Mihai Anca, Mark Cornick, Shay Arnett, Joshua Clayton,
-Mustafa Ekim, Jon Yurek, Anuj Dutta, Chad Pytel, Ben Orenstein, Bobby Wilson,
-Matthew Ford, Ryan McGeary, Claudio Poli, Joseph Holsten, Peter Haza,
-Ron Newman, and Rich Thornett.
+Thank you to all [the contributors](https://github.com/thoughtbot/clearance/contributors)!

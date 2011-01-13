@@ -18,13 +18,11 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
-    "app/controllers/clearance/confirmations_controller.rb",
     "app/controllers/clearance/passwords_controller.rb",
     "app/controllers/clearance/sessions_controller.rb",
     "app/controllers/clearance/users_controller.rb",
     "app/models/clearance_mailer.rb",
     "app/views/clearance_mailer/change_password.html.erb",
-    "app/views/clearance_mailer/confirmation.html.erb",
     "app/views/passwords/edit.html.erb",
     "app/views/passwords/new.html.erb",
     "app/views/sessions/new.html.erb",
@@ -39,6 +37,7 @@ Gem::Specification.new do |s|
     "lib/clearance/engine.rb",
     "lib/clearance/extensions/errors.rb",
     "lib/clearance/extensions/rescue.rb",
+    "lib/clearance/shoulda_macros.rb",
     "lib/clearance/user.rb",
     "lib/rails/generators/clearance_features_generator.rb",
     "lib/rails/generators/clearance_features_templates/features/password_reset.feature",
@@ -59,8 +58,7 @@ Gem::Specification.new do |s|
     "lib/rails/generators/clearance_views_templates/formtastic/erb/sessions/new.html.erb",
     "lib/rails/generators/clearance_views_templates/formtastic/erb/users/_inputs.html.erb",
     "lib/rails/generators/clearance_views_templates/formtastic/erb/users/new.html.erb",
-    "rails/init.rb",
-    "shoulda_macros/clearance.rb"
+    "init.rb",
   ]
 
   s.homepage = %q{http://github.com/thoughtbot/clearance}
@@ -94,13 +92,7 @@ Gem::Specification.new do |s|
     "spec/rails_root/config/initializers/session_store.rb",
     "spec/rails_root/config/locales/en.yml",
     "spec/rails_root/config/routes.rb",
-    "spec/rails_root/db/schema.rb",
     "spec/rails_root/doc/README_FOR_APP",
-    "spec/rails_root/features/password_reset.feature",
-    "spec/rails_root/features/sign_in.feature",
-    "spec/rails_root/features/sign_out.feature",
-    "spec/rails_root/features/sign_up.feature",
-    "spec/rails_root/features/step_definitions/clearance_steps.rb",
     "spec/rails_root/features/step_definitions/web_steps.rb",
     "spec/rails_root/features/support/env.rb",
     "spec/rails_root/features/support/paths.rb",
@@ -119,8 +111,6 @@ Gem::Specification.new do |s|
     "spec/rails_root/public/robots.txt",
     "spec/rails_root/script/cucumber",
     "spec/rails_root/script/rails",
-    "spec/rails_root/spec/factories/clearance.rb",
-    "spec/rails_root/vendor/plugins/clearance",
     "spec/rails_root/vendor/plugins/dynamic_form/MIT-LICENSE",
     "spec/rails_root/vendor/plugins/dynamic_form/README",
     "spec/rails_root/vendor/plugins/dynamic_form/Rakefile",
@@ -130,7 +120,6 @@ Gem::Specification.new do |s|
     "spec/rails_root/vendor/plugins/dynamic_form/test/dynamic_form_i18n_test.rb",
     "spec/rails_root/vendor/plugins/dynamic_form/test/dynamic_form_test.rb",
     "spec/rails_root/vendor/plugins/dynamic_form/test/test_helper.rb",
-    "test/controllers/confirmations_controller_test.rb",
     "test/controllers/passwords_controller_test.rb",
     "test/controllers/sessions_controller_test.rb",
     "test/controllers/users_controller_test.rb",
@@ -197,8 +186,9 @@ Gem::Specification.new do |s|
     "test/test_helper.rb"
   ]
 
-  s.add_dependency('rails', '~>3.0.0.beta4')
-  s.add_development_dependency('rspec', [">= 1.3.0"])
+  s.add_dependency('rails', '~>3.0.0')
+  s.add_development_dependency('rspec', '~> 1.3.0')
+  s.add_development_dependency('cucumber', '0.10.0')
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION

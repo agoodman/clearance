@@ -3,7 +3,6 @@ class Clearance::SessionsController < ApplicationController
 
   skip_before_filter :authenticate, :only => [:new, :create, :destroy]
   protect_from_forgery :except => :create
-  filter_parameter_logging :password
 
   def new
     render :template => 'sessions/new'
@@ -65,13 +64,6 @@ class Clearance::SessionsController < ApplicationController
 
   def flash_success_after_create
     flash[:notice] = translate(:signed_in, :default =>  "Signed in.")
-  end
-
-  def flash_notice_after_create
-    flash[:notice] = translate(:unconfirmed_email,
-      :scope   => [:clearance, :controllers, :sessions],
-      :default => "User has not confirmed email. " <<
-                  "Confirmation email will be resent.")
   end
 
   def url_after_create

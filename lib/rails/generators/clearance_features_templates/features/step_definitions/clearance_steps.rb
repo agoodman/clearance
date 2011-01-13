@@ -15,29 +15,26 @@ Given /^no user exists with an email of "(.*)"$/ do |email|
 end
 
 Given /^I signed up with "(.*)\/(.*)"$/ do |email, password|
-  user = Factory :user,
-    :email                 => email,
-    :password              => password,
-    :password_confirmation => password
-end 
+  Factory(:user,
+          :email                 => email,
+          :password              => password,
+          :password_confirmation => password)
+end
 
-Given /^I am signed up and confirmed as "(.*)\/(.*)"$/ do |email, password|
-  user = Factory :email_confirmed_user,
-    :email                 => email,
-    :password              => password,
-    :password_confirmation => password
+Given /^I am signed up as "([^"]+)"$/ do |email_password|
+  Given %{I signed up with "#{email_password}"}
 end
 
 # Session
 
 Then /^I should be signed in$/ do
-  Given %{I am on the homepage} 
-  Then %{I should see "Sign out"} 
+  Given %{I am on the homepage}
+  Then %{I should see "Sign out"}
 end
 
 Then /^I should be signed out$/ do
-  Given %{I am on the homepage} 
-  Then %{I should see "Sign in"} 
+  Given %{I am on the homepage}
+  Then %{I should see "Sign in"}
 end
 
 When /^session is cleared$/ do
@@ -48,29 +45,16 @@ When /^session is cleared$/ do
 end
 
 Given /^I have signed in with "(.*)\/(.*)"$/ do |email, password|
-  Given %{I am signed up and confirmed as "#{email}/#{password}"}
+  Given %{I am signed up as "#{email}/#{password}"}
   And %{I sign in as "#{email}/#{password}"}
 end
 
+Given /^I sign in$/ do
+  email = Factory.next(:email)
+  Given %{I have signed in with "#{email}/password"}
+end
+
 # Emails
-
-Then /^a confirmation message should be sent to "(.*)"$/ do |email|
-  user = User.find_by_email(email)
-  assert !user.confirmation_token.blank?
-  assert !ActionMailer::Base.deliveries.empty?
-  result = ActionMailer::Base.deliveries.any? do |email|
-    email.to == [user.email] &&
-    email.subject =~ /confirm/i &&
-    email.body =~ /#{user.confirmation_token}/
-  end
-  assert result
-end
-
-When /^I follow the confirmation link sent to "(.*)"$/ do |email|
-  user = User.find_by_email(email)
-  visit new_user_confirmation_path(:user_id => user,
-                                   :token   => user.confirmation_token)
-end
 
 Then /^a password reset message should be sent to "(.*)"$/ do |email|
   user = User.find_by_email(email)
@@ -108,8 +92,11 @@ When /^I sign in as "(.*)\/(.*)"$/ do |email, password|
   And %{I press "Sign in"}
 end
 
-When /^I sign out$/ do
-  visit '/sign_out'
+When "I sign out" do
+  steps %{
+    When I go to the homepage
+    And I follow "Sign out"
+  }
 end
 
 When /^I request password reset link to be sent to "(.*)"$/ do |email|
