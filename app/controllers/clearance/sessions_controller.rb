@@ -18,16 +18,16 @@ class Clearance::SessionsController < ApplicationController
           flash_failure_after_create
           render :template => 'sessions/new', :status => :unauthorized
         }
-        format.json { render :json => error_after_create(@user), :status => :unauthorized }
-        format.xml  { render :xml => error_after_create(@user), :status => :unauthorized }
+        format.json { render :json => error_after_create, :status => :unauthorized }
+        format.xml  { render :xml => error_after_create, :status => :unauthorized }
       else
         sign_in(@user)
         format.html { 
           flash_success_after_create
           redirect_to(url_after_create)
         }
-        format.json { render :json => hash_after_create(@user), :status => :ok }
-        format.xml  { render :xml => hash_after_create(@user), :status => :ok }
+        format.json { render :json => hash_after_create, :status => :ok }
+        format.xml  { render :xml => hash_after_create, :status => :ok }
       end
     end
   end
@@ -68,12 +68,12 @@ class Clearance::SessionsController < ApplicationController
     sign_in_url
   end
   
-  def hash_after_create(user)
-    { :session => { :user_id => user.id, :token => user.remember_token } }
+  def hash_after_create
+    { :session => { :user_id => @user.id, :token => @user.remember_token } }
   end
   
-  def error_after_create(user)
-    { :errors => user.errors.full_messages }
+  def error_after_create
+    { :errors => [ 'Email or password did not match.' ] }
   end
   
 end
