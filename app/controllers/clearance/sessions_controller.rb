@@ -87,7 +87,7 @@ class Clearance::SessionsController < ApplicationController
   end
   
   def hash_after_create(user)
-    user
+    { :session => { :user_id => user.id, :token => user.remember_token } }
   end
   
   def error_after_create(user)
