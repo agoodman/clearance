@@ -35,8 +35,6 @@ Gem::Specification.new do |s|
     "lib/clearance/authentication.rb",
     "lib/clearance/configuration.rb",
     "lib/clearance/engine.rb",
-    "lib/clearance/extensions/errors.rb",
-    "lib/clearance/extensions/rescue.rb",
     "lib/clearance/shoulda_macros.rb",
     "lib/clearance/user.rb",
     "lib/rails/generators/clearance_features_generator.rb",
