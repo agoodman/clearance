@@ -6,11 +6,13 @@ class ClearanceCreateUsers < ActiveRecord::Migration
       t.string   :salt,               :limit => 128
       t.string   :confirmation_token, :limit => 128
       t.string   :remember_token,     :limit => 128
+      t.string   :api_token,          :limit => 128
       t.timestamps
     end
 
     add_index :users, :email
     add_index :users, :remember_token
+    add_index :users, :api_token
   end
 
   def self.down
