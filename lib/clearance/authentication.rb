@@ -22,7 +22,7 @@ module Clearance
       #
       # @return [User, nil]
       def current_user
-        @_current_user ||= user_from_cookie
+        @_current_user ||= user_from_basic_auth || user_from_cookie
       end
 
       # Set the current user
@@ -92,6 +92,12 @@ module Clearance
 
       protected
 
+      def user_from_basic_auth
+        authenticate_or_request_with_basic_auth do |user,pass|
+          ::User.find_by_api_token(user)
+        end
+      end
+      
       def user_from_cookie
         if token = cookies[:remember_token]
           ::User.find_by_remember_token(token)
