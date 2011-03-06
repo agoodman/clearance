@@ -94,7 +94,7 @@ module Clearance
 
       def user_from_basic_auth
         return nil unless @request.env['HTTP_AUTHORIZATION']
-        authenticate_or_request_with_http_basic do |user,pass|
+        authenticate_with_http_basic do |user,pass|
           ::User.find_by_api_token(user)
         end
       end
