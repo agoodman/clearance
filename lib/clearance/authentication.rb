@@ -93,7 +93,7 @@ module Clearance
       protected
 
       def user_from_basic_auth
-        authenticate_or_request_with_basic_auth do |user,pass|
+        authenticate_or_request_with_http_basic do |user,pass|
           ::User.find_by_api_token(user)
         end
       end
