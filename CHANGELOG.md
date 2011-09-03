@@ -1,3 +1,80 @@
+0.12.0
+-------------------
+
+* [#129] Denying access redirects to root_url when signed in, sign_in_url when signed out. (Dan Croak)
+* Using flash :notice key everywhere now instead of :success and :failure. More in line with Rails conventions. (Dan Croak)
+* [#149] redirect_back_or on sign up. (Dan Croak)
+* [#147] Resetting password no longer redirects to sign in page. It displays a message telling them to look for an email. (Dan Croak)
+* Removed redundant flash messages. ("Signed in.", "Signed out.", and "You are now signed up.") (Dan Croak)
+
+0.11.2
+-------------------
+
+* Rails 3.1.rc compatible. (Prem Sichanugrist and Dan Croak)
+* Cucumber features no longer require password. (Dan Croak)
+* No more Clearance shoulda_macros. Instead providing RSpec- and Test::Unit-compliant test matchers (sign_in, sign_in_as, should deny_access, etc). (Dan Croak)
+
+0.11.1
+-------------------
+
+* [#146] Redirect to home page after sign up. (Dan Croak)
+* [#145] Remove dependency on dynamic_form. Replaced with flashes due to limited number of failure cases. (Dan Croak)
+* Moving ClearanceMailer to app/mailers. Moving spec to spec/mailers. (Dan Croak)
+* [#148] Removing :case_sensitive option from validates_uniqueness_of. It was unnecessary and causes a small performance problem on some apps. (Dan Croak)
+* Only development dependency in gemspec should be bundler. All others are derived by bundling. (Dan Croak)
+
+0.11.0
+-------------------
+
+* [#141] Removing password confirmation. (Dan Croak)
+* [#143] Use ActiveSupport::Concern and ActiveSupport::SecureRandom to clean up code. (Dan Croak)
+* New controller#authenticate(params) method. Redefine username & password or other styles of authentication. (Dan Croak)
+* before_filter :authenticate API replaced with more aptly-named before_filter :authorize. (Dan Croak)
+
+0.10.5
+-------------------
+
+* Closing CSRF hole for Rails >= 3.0.4 apps (Mack Earnhardt)
+
+0.10.4
+------------------
+
+* Formtastic views generator removed. (Dan Croak)
+* Emails forced to be downcased (particularly for iPhone user case). (Adam Conrad)
+* Suite converted from test/unit to RSpec. (Joe Ferris)
+* [#135] Password reset requires a password. (Joel Meador)
+* [#138] Use HTML5 email fields. (Dan Croak)
+
+0.10.3.2
+------------------
+
+* Fix gemspec to include all necessary files.
+
+0.10.3.1
+------------------
+
+* Ensure everything within features inside any engine directory is included in the gemspec
+
+0.10.3
+------------------
+
+* Include features/engines in gemspec file list so generator works as expected
+
+0.10.2
+------------------
+
+* Replaced test/rails_root & general testing strategy with Diesel. (Joe Ferris)
+* Conveniences in factories for password/confirmation.
+* New generator command: rails generate clearance:install.
+* Step definitions are now prefixed with visitor_ to use thoughtbot convention. (Dan Croak)
+* When Clearance installed in an app that already has users, allow old users to sign in by resetting their password.
+
+0.10.1
+------------------
+
+* replaced ActionController::Forbidden with a user-friendly flash message. (Dan Croak)
+* improved language of Cucumber steps by allowing a little more flexibility. (Dan Croak)
+
 0.10.0
 ------------------
 
@@ -10,7 +87,7 @@
   https://github.com/rails/jquery-ujs/issues#issue/30
   http://bugs.jquery.com/ticket/7061
 
-0.9.x
+0.9.1
 ------------------
 
 Forgot to update the changelog in a while, this is going to be brief:

@@ -1,33 +1,23 @@
 Clearance
 =========
 
-Rails authentication with email & password.
+Rails authentication & authorization with email & password.
 
 [We have clearance, Clarence.](http://www.youtube.com/watch?v=fVq4_HhBK8Y)
 
-Clearance was extracted out of [Hoptoad](http://hoptoadapp.com). We merged the
-authentication code from two of thoughtbot's client Rails apps and have since
-used it each time we needed authentication.
+Clearance was extracted out of [Hoptoad](http://hoptoadapp.com).
 
 Help
 ----
 
-* [documentation](http://rdoc.info/gems/clearance)
-* [#thoughtbot](irc://irc.freenode.net/thoughtbot) IRC channel on freenode
-* [mailing list](http://groups.google.com/group/thoughtbot-clearance)
-
-Bugs, Patches
--------------
-
-Fork away and create a [Github Issue](http://github.com/thoughtbot/clearance/issues).
+* [Documentation](http://rdoc.info/gems/clearance) at RDoc.info.
+* [Patches and bugs](http://github.com/thoughtbot/clearance/issues) at Github Issues.
+* [Mailing list](http://groups.google.com/group/thoughtbot-clearance) at Google Groups.
 
 Installation
 ------------
 
-Clearance is a Rails engine for Rails 3.
-
-Use the [0.8.x](https://github.com/thoughtbot/clearance/tree/v0.8.8)
-series of Clearance if you have a Rails 2 app.
+Clearance is a Rails engine for Rails 3. It is currently tested against Rails 3.0.9 and Rails 3.1.0.rc4.
 
 Include the gem in your Gemfile:
 
@@ -35,7 +25,7 @@ Include the gem in your Gemfile:
 
 Make sure the development database exists, then run the generator:
 
-    rails generate clearance
+    rails generate clearance:install
 
 This:
 
@@ -43,28 +33,65 @@ This:
 * inserts Clearance::Authentication into your ApplicationController
 * creates a migration that either creates a users table or adds only missing columns
 
+Follow the instructions that are output from the generator.
+
+Use the [0.8.x](https://github.com/thoughtbot/clearance/tree/v0.8.8)
+series of Clearance if you have a Rails 2 app.
+
 Usage
 -----
 
-If you want to authenticate users for a controller action, use the authenticate
+If you want to authorize users for a controller action, use the authorize
 method in a before_filter.
 
     class WidgetsController < ApplicationController
-      before_filter :authenticate
+      before_filter :authorize
+
       def index
         @widgets = Widget.all
       end
     end
 
-Customizing
------------
+If you want to reference the current user in a controller, view, or helper, use
+the current_user method.
 
-To change any of provided actions, subclass a Clearance controller...
+    def index
+      current_user.articles
+    end
+
+If you want to know whether the current user is signed in or out, you can use
+these methods in controllers, views, or helpers:
+
+    signed_in?
+    signed_out?
+
+Typically, you want to have something like this in your app, maybe in a layout:
+
+    <% if signed_in? %>
+      <%= current_user.email %>
+      <%= link_to "Sign out", sign_out_path, :method => :delete %>
+    <% else %>
+      <%= link_to "Sign in", sign_in_path %>
+    <% end %>
+
+If you ever want to authenticate the user some place other than sessions/new,
+maybe in an API:
+
+    User.authenticate("email@example.com", "password")
+
+Overriding defaults
+-------------------
+
+Clearance is intended to be small, simple, well-tested, and easy to override defaults.
+
+If you ever need to change the logic in any of the four provided controllers,
+subclass the Clearance controller. You don't need to do this by default.
 
     class SessionsController < Clearance::SessionsController
       def new
         # my special new action
       end
+
       def url_after_create
         my_special_path
       end
@@ -77,50 +104,75 @@ and add your route in config/routes.rb:
 See config/routes.rb for all the routes Clearance provides.
 
 Actions that redirect (create, update, and destroy) in Clearance controllers
-can be overridden by re-defining url_after_(action) methods as seen above.
+can be overridden by re-defining url\_after\_(action) methods as seen above.
+
+Clearance is an engine, so it provides views for you. If you want to customize those views, there is a handy shortcut to copy the views into your app:
+
+    rails generate clearance:views
 
 Optional Cucumber features
 --------------------------
 
-As your app evolves, you want to know that authentication still works. Our
-opinion is that you should test its integration with your app using
-[Cucumber](http://cukes.info).
+As your app evolves, you want to know that authentication still works. If you've
+installed [Cucumber](http://cukes.info) into your app:
 
-Run the Cucumber generator and Clearance feature generator:
+    rails generate cucumber:install
 
-    script/rails generate cucumber
-    script/rails generate clearance_features
+Then, you can use the Clearance features generator:
+
+    rails generate clearance:features
 
 Edit your Gemfile to include:
 
     gem 'factory_girl_rails'
 
-Edit your config/enviroments/cucumber.rb to include the following:
+Edit config/enviroments/test.rb to include the following:
 
     config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
-Then run rake!
+Then run your tests!
 
-Optional Formtastic views
--------------------------
+    rake
 
-We use & recommend [Formtastic](http://github.com/justinfrench/formtastic).
+Optional test matchers
+----------------------
 
-Clearance has another generator to generate Formastic views:
+Clearance comes with test matchers that are compatible with RSpec and Test::Unit.
 
-    script/rails generate clearance_views
+To use them, require the test matchers. For example, in spec/support/clearance.rb:
 
-Its implementation is designed so other view styles (Haml?) can be generated.
+    require 'clearance/testing'
 
-Extensions
-----------
+You'll then have access to methods like:
 
-Clearance is intended to be small, simple, well-tested, and easy to extend.
-Check out some of the ways people have extended Clearance:
+    sign_in
+    sign_in_as(user)
+    sign_out
 
-* [Clearance HTTP Auth](https://github.com/karmi/clearance_http_auth)
-* [Clearance Twitter](https://github.com/thoughtbot/clearance-twitter)
-* [Clearance Admin](https://github.com/xenda/clearance-admin)
+And matchers like:
+
+    deny_access
+
+Example:
+
+    context "a visitor" do
+      before { get :show }
+      it     { should deny_access }
+    end
+
+    context "a user" do
+      before do
+        sign_in
+        get :show
+      end
+
+      it { should respond_with(:success) }
+    end
+
+Contributing
+------------
+
+Please see CONTRIBUTING.md for details.
 
 Credits
 -------

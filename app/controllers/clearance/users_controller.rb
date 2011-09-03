@@ -1,8 +1,8 @@
 class Clearance::UsersController < ApplicationController
   unloadable
 
-  skip_before_filter :authenticate, :only => [:new, :create]
-  before_filter :redirect_to_root,  :only => [:new, :create], :if => :signed_in?
+  skip_before_filter :authorize,   :only => [:new, :create]
+  before_filter :redirect_to_root, :only => [:new, :create], :if => :signed_in?
 
   def new
     @user = ::User.new(params[:user])
@@ -10,8 +10,9 @@ class Clearance::UsersController < ApplicationController
   end
 
   def create
-    @user = ::User.new params[:user]
+    @user = ::User.new(params[:user])
     if @user.save
+      sign_in(@user)
       respond_to do |format|
         format.html { 
           flash_success_after_create
@@ -45,7 +46,7 @@ class Clearance::UsersController < ApplicationController
   end
 
   def url_after_create
-    sign_in_url
+    '/'
   end
   
   def hash_after_create(user)
